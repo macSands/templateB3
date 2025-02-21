@@ -7,7 +7,7 @@ Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line) Use four
     spaces when indenting paragraphs within the Description.
 License: What license is it under?
-URL: https://github.com/macSands/templateB3
+URL: https://github.com/yourname/templateB3, https://macsands.github.io/templateB3
 BugReports: https://github.com/macSands/templateB3/issues
 Suggests: 
     knitr,
