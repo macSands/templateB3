@@ -10,6 +10,7 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 [![test-coverage](https://github.com/macSands/templateB3/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/macSands/templateB3/actions/workflows/test-coverage.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/macSands/templateB3/graph/badge.svg)](https://app.codecov.io/gh/macSands/templateB3)
+[![R-CMD-check](https://github.com/macSands/templateB3/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/macSands/templateB3/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of templateB3 is to …
