@@ -4,6 +4,12 @@
 # templateB3
 
 <!-- badges: start -->
+
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![test-coverage](https://github.com/macSands/templateB3/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/macSands/templateB3/actions/workflows/test-coverage.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/macSands/templateB3/graph/badge.svg)](https://app.codecov.io/gh/macSands/templateB3)
 <!-- badges: end -->
 
 The goal of templateB3 is to …
