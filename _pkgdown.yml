@@ -1,21 +1,28 @@
-url: https://macsands.github.io/templateB3
-
+url: https://macsands.github.io/templateB3/
 template:
   bootstrap: 5
   bslib:
-    bg: "#ffffff"
-    fg: "#2f2f2f"
-    heading_font: {google: "PT Sans"}
-    primary: "#005856"
-
+    bg: '#ffffff'
+    fg: '#2f2f2f'
+    heading_font:
+      google: PT Sans
+    primary: '#005856'
 navbar:
   bg: primary
   type: dark
   structure:
-    left: [intro, reference, news, articles]
-    right: [search, mainsite, github]
+    left:
+    - intro
+    - reference
+    - news
+    - articles
+    right:
+    - search
+    - mainsite
+    - github
   components:
     mainsite:
       icon: fa-cube
       href: https://b-cubed.eu/
       aria-label: B-Cubed website
+
