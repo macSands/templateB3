@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   getting-started: getting-started.html
-last_built: 2025-03-09T08:12Z
+last_built: 2025-03-09T08:32Z
 urls:
   reference: https://macsands.github.io/templateB3/reference
   article: https://macsands.github.io/templateB3/articles
