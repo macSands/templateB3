@@ -35,6 +35,7 @@ You can install the development version of templateB3 like so:
 ## Example
 
 This is a basic example which shows you how to solve a common problem:
+Test if this pushes OK
 
 ```{r example}
 library(templateB3)
