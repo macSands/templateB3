@@ -8,3 +8,4 @@
 .quarto
 docs
 inst/doc
+copyOld_README.Rmd

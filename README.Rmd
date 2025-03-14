@@ -34,7 +34,7 @@ Please note that paths to data, package names, or exact functions may need adjus
 # library(dissMapR)
 library(templateB3)
 
-setwd('D:\\Methods\\R\\myR_Packages\\templateB3')
+# setwd('D:\\Methods\\R\\myR_Packages\\templateB3')
 ```
 
 ## 1. User-Defined Area of Interest and Grid Resolution
@@ -57,7 +57,7 @@ library(zoo)
 # Adjust the path and layer name as needed
 # aoi <- st_read("D:/Methods/R/myR_Packages/all_B3_packages/dissMapR/data/rsa.shp")
 # aoi <- st_read(system.file("data", "rsa.shp", package = "dissMapR"))
-aoi <- sf::st_read("D:/Methods/R/myR_Packages/templateB3/data/rsa.shp")
+aoi <- sf::st_read("D:/Methods/R/myR_Packages/templateB3/inst/extdata/rsa.shp")
 # aoi <- st_read(system.file("extdata", "rsa.shp", package = "dissMapR"))
 ```
 
@@ -132,8 +132,8 @@ dim(occ_data)
 # Site coordinates
 # Count number of occurrences per cell as a measure of sampling effort
 sites_xy <- occ_data %>%
-  group_by(cell_id, x, y) %>%
-  summarise(effort = n(),
+  dplyr::group_by(cell_id, x, y) %>%
+  dplyr::summarise(effort = n(),
             richness = n_distinct(species))
 names(sites_xy) = c("cell_id","x","y","effort","richness")
 dim(sites_xy)
@@ -144,8 +144,8 @@ head(sites_xy)
 ```{r effort}
 # Count number of occurrences per cell as a measure of sampling effort
 effort_df <- occ_data %>%
-  group_by(cell_id) %>% # ,decimalLongitude,decimalLatitude
-  summarise(n_occurrences = n())
+  dplyr::group_by(cell_id) %>% # ,decimalLongitude,decimalLatitude
+  dplyr::summarise(n_occurrences = n())
 dim(effort_df)
 
 # Rasterize sampling effort (optional for mapping)
@@ -160,15 +160,15 @@ values(sam_eff_rast)[effort_df$cell_id] <- effort_df$n_occurrences
 # For presence-absence, pivot occurrence data to wide format:
 # occ_data = c('species', 'x', 'y', 'cell_id')
 sbs_long <- occ_data %>%
-  distinct(cell_id, species) %>%
-  mutate(presence = 1)
+  dplyr::distinct(cell_id, species) %>%
+  dplyr::mutate(presence = 1)
 dim(sbs_long)
 
 # Ensure we have a row for every cell (site) in 'xy'
 all_cells <- data.frame(cell_id = 1:ncell(r_id))
 sbs_wide <- all_cells %>%
-  left_join(sbs_long, by = "cell_id") %>%
-  pivot_wider(id_cols = cell_id, names_from = species, values_from = presence, values_fill = 0)
+  dplyr::left_join(sbs_long, by = "cell_id") %>%
+  tidyr::pivot_wider(id_cols = cell_id, names_from = species, values_from = presence, values_fill = 0)
 dim(sbs_wide)
 
 # sbs - site-by-species matrix
@@ -497,13 +497,13 @@ dim(sites_xy)
 ---
 ### Draft notes from CangH:
 
-Dissimilarity workflow 
-1.	User-defined area of interest and grid resolution (incl. rsa shape file, 0.5 degree), generate a map of AOI and a data frame ‘xy’ of site centroids. 
-2.	Site by species matrix and sampling effort (incl. access occurrences of user-specified taxon or species list, assign records to the grids, generate a raster of occurrence counts called sampling effort), generate a binary data frame ‘sbs’, a richness map of sbs row sums, a single variable data frame of sampling effort ‘sam.eff’ and its raster map. Note, occurrence coordinates are only used for assigning then into grids; they are not needed beyond this step. 
-3.	Site by environment matrix; extract environmental variables only for site centroids ‘xy’ and stack them into raster and data frame ‘sbe’; add ‘sam.eff’ to the stack raster and sbe. 
-4.	Zeta decline (sbs) and zeta decay (sbs, xy), orders 2:15. Generate statistics and figures, no maps. 
-5.	Zeta.msgdm(sbs, sbe, xy), order 2, 3, 5, 10. Generate statistics and figures, no maps. Save fitted order 2 model ‘zeta2’. 
-6.	Predict(zeta2) with ‘sam.eff’ in the ‘sbe’ replaced by ‘sam.max’ a constant for all sites = max(sam.eff). Predict for the updated sbe and xy and produce a site by site matrix of predicted zeta ‘zeta.now’. Run nmds for the predicted zeta matrix and plot RGB of the 3 component scores. Clustering analyses directly using zeta.now. Generate main maps of dissimilarity (the rgb plot) and bioregions (from clustering). 
-7.	Predict(zeta2) with appended (future scenarios) environmental variables and ‘sam.max’ in sbe. For m number of scenarios plus the present scenario (step6) and n sites of xy, this updated sbe.future will have k = (m+1) x n number of rows. ‘xy’ also updated with k rows. Predict a k by k matrix of predicted zeta ‘zeta.future’. Nmds and clustering of zeta.future, map sub matrices to indicate predicted future dissimilarity, bioregions, and temporal turnover. Note, step6 is redundant if step7 is needed; step7 has the same code but more results including those from step6 but potentially computational demanding. 
+Dissimilarity workflow   
+1.	User-defined area of interest and grid resolution (incl. rsa shape file, 0.5 degree), generate a map of AOI and a data frame ‘xy’ of site centroids.   
+2.	Site by species matrix and sampling effort (incl. access occurrences of user-specified taxon or species list, assign records to the grids, generate a raster of occurrence counts called sampling effort), generate a binary data frame ‘sbs’, a richness map of sbs row sums, a single variable data frame of sampling effort ‘sam.eff’ and its raster map. Note, occurrence coordinates are only used for assigning then into grids; they are not needed beyond this step.   
+3.	Site by environment matrix; extract environmental variables only for site centroids ‘xy’ and stack them into raster and data frame ‘sbe’; add ‘sam.eff’ to the stack raster and sbe.   
+4.	Zeta decline (sbs) and zeta decay (sbs, xy), orders 2:15. Generate statistics and figures, no maps.   
+5.	Zeta.msgdm(sbs, sbe, xy), order 2, 3, 5, 10. Generate statistics and figures, no maps. Save fitted order 2 model ‘zeta2’.   
+6.	Predict(zeta2) with ‘sam.eff’ in the ‘sbe’ replaced by ‘sam.max’ a constant for all sites = max(sam.eff). Predict for the updated sbe and xy and produce a site by site matrix of predicted zeta ‘zeta.now’. Run nmds for the predicted zeta matrix and plot RGB of the 3 component scores. Clustering analyses directly using zeta.now. Generate main maps of dissimilarity (the rgb plot) and bioregions (from clustering).   
+7.	Predict(zeta2) with appended (future scenarios) environmental variables and ‘sam.max’ in sbe. For m number of scenarios plus the present scenario (step6) and n sites of xy, this updated sbe.future will have k = (m+1) x n number of rows. ‘xy’ also updated with k rows. Predict a k by k matrix of predicted zeta ‘zeta.future’. Nmds and clustering of zeta.future, map sub matrices to indicate predicted future dissimilarity, bioregions, and temporal turnover. Note, step6 is redundant if step7 is needed; step7 has the same code but more results including those from step6 but potentially computational demanding.   
 8.	Deposit all data frames, tables, maps, and standard metadata to zenodo
 

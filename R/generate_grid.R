@@ -22,6 +22,7 @@
 #' @import sf
 #' @import terra
 #' @import dplyr
+#' @importFrom magrittr %>%
 #' @export
 #'
 #' @examples
@@ -66,6 +67,7 @@ generate_grid <- function(data,
                           unit = c("deg", "min", "sec", "m")
 ) {
   # Ensure required packages are available
+  utils::globalVariables(c("grid_id"))
   required_packages <- c("sf", "terra", "dplyr")
   for (pkg in required_packages) {
     if (!requireNamespace(pkg, quietly = TRUE)) {

@@ -29,7 +29,7 @@ need adjustment depending on your local setup.
 # library(dissMapR)
 library(templateB3)
 
-setwd('D:\\Methods\\R\\myR_Packages\\templateB3')
+# setwd('D:\\Methods\\R\\myR_Packages\\templateB3')
 ```
 
 ## 1. User-Defined Area of Interest and Grid Resolution
@@ -92,9 +92,10 @@ library(zoo)
 # Adjust the path and layer name as needed
 # aoi <- st_read("D:/Methods/R/myR_Packages/all_B3_packages/dissMapR/data/rsa.shp")
 # aoi <- st_read(system.file("data", "rsa.shp", package = "dissMapR"))
-aoi <- sf::st_read("D:/Methods/R/myR_Packages/templateB3/data/rsa.shp")
+aoi <- sf::st_read("D:/Methods/R/myR_Packages/templateB3/inst/extdata/rsa.shp")
 #> Reading layer `rsa' from data source 
-#>   `D:\Methods\R\myR_Packages\templateB3\data\rsa.shp' using driver `ESRI Shapefile'
+#>   `D:\Methods\R\myR_Packages\templateB3\inst\extdata\rsa.shp' 
+#>   using driver `ESRI Shapefile'
 #> Simple feature collection with 1 feature and 1 field
 #> Geometry type: POLYGON
 #> Dimension:     XY
@@ -185,12 +186,12 @@ dim(occ_data)
 occ_data <- subset(occ_data, !is.na(cell_id))
 head(occ_data)
 #>    species        x         y cell_id
-#> 1 SpeciesA 19.44618 -22.57901       7
-#> 2 SpeciesA 22.19479 -26.70060     276
-#> 3 SpeciesC 26.10377 -34.67723     812
-#> 4 SpeciesA 18.86806 -24.25060     137
-#> 5 SpeciesB 20.07597 -31.82684     635
-#> 6 SpeciesC 29.50120 -28.50347     423
+#> 1 SpeciesA 21.31359 -24.14628     109
+#> 2 SpeciesA 27.62681 -34.56023     815
+#> 3 SpeciesB 19.05475 -23.78736     105
+#> 4 SpeciesC 28.13970 -24.33725     156
+#> 5 SpeciesA 22.90552 -32.16872     640
+#> 6 SpeciesC 25.08964 -29.07542     447
 dim(occ_data)
 #> [1] 1000    4
 ```
@@ -201,8 +202,8 @@ dim(occ_data)
 # Site coordinates
 # Count number of occurrences per cell as a measure of sampling effort
 sites_xy <- occ_data %>%
-  group_by(cell_id, x, y) %>%
-  summarise(effort = n(),
+  dplyr::group_by(cell_id, x, y) %>%
+  dplyr::summarise(effort = n(),
             richness = n_distinct(species))
 #> `summarise()` has grouped output by 'cell_id', 'x'. You can override using the
 #> `.groups` argument.
@@ -214,12 +215,12 @@ head(sites_xy)
 #> # Groups:   cell_id, x [6]
 #>   cell_id     x     y effort richness
 #>     <dbl> <dbl> <dbl>  <int>    <int>
-#> 1       1  16.9 -22.6      1        1
-#> 2       4  18.3 -22.6      1        1
-#> 3       4  18.3 -22.6      1        1
-#> 4       4  18.3 -22.4      1        1
-#> 5       6  19.0 -22.1      1        1
-#> 6       7  19.4 -22.6      1        1
+#> 1       3  17.6 -22.3      1        1
+#> 2       3  17.9 -22.4      1        1
+#> 3       3  17.9 -22.2      1        1
+#> 4       4  18.0 -22.4      1        1
+#> 5       4  18.1 -22.4      1        1
+#> 6       5  18.7 -22.5      1        1
 ```
 
 #### Sampling Effort
@@ -227,10 +228,10 @@ head(sites_xy)
 ``` r
 # Count number of occurrences per cell as a measure of sampling effort
 effort_df <- occ_data %>%
-  group_by(cell_id) %>% # ,decimalLongitude,decimalLatitude
-  summarise(n_occurrences = n())
+  dplyr::group_by(cell_id) %>% # ,decimalLongitude,decimalLatitude
+  dplyr::summarise(n_occurrences = n())
 dim(effort_df)
-#> [1] 580   2
+#> [1] 595   2
 
 # Rasterize sampling effort (optional for mapping)
 sam_eff_rast <- r_id
@@ -244,16 +245,16 @@ values(sam_eff_rast)[effort_df$cell_id] <- effort_df$n_occurrences
 # For presence-absence, pivot occurrence data to wide format:
 # occ_data = c('species', 'x', 'y', 'cell_id')
 sbs_long <- occ_data %>%
-  distinct(cell_id, species) %>%
-  mutate(presence = 1)
+  dplyr::distinct(cell_id, species) %>%
+  dplyr::mutate(presence = 1)
 dim(sbs_long)
-#> [1] 816   3
+#> [1] 820   3
 
 # Ensure we have a row for every cell (site) in 'xy'
 all_cells <- data.frame(cell_id = 1:ncell(r_id))
 sbs_wide <- all_cells %>%
-  left_join(sbs_long, by = "cell_id") %>%
-  pivot_wider(id_cols = cell_id, names_from = species, values_from = presence, values_fill = 0)
+  dplyr::left_join(sbs_long, by = "cell_id") %>%
+  tidyr::pivot_wider(id_cols = cell_id, names_from = species, values_from = presence, values_fill = 0)
 dim(sbs_wide)
 #> [1] 825   5
 
@@ -317,8 +318,8 @@ env_stack
 #> coord. ref. : lon/lat WGS 84 (EPSG:4326) 
 #> source(s)   : memory
 #> names       :     temp,    precip 
-#> min values  : 10.03506,  100.9582 
-#> max values  : 29.97553, 2997.4084
+#> min values  : 10.02008,  102.5856 
+#> max values  : 29.97091, 2999.7811
 ```
 
 #### Extract Environmental Values
@@ -327,13 +328,13 @@ env_stack
 # Extract environmental values at each site centroid
 env_vals <- terra::extract(env_stack, cbind(sites_xy$x, sites_xy$y))
 head(env_vals)
-#>       temp   precip
-#> 1 29.92914 1423.596
-#> 2 26.02424 2516.053
-#> 3 26.02424 2516.053
-#> 4 26.02424 2516.053
-#> 5 24.65696 2784.449
-#> 6 22.96617 2652.698
+#>       temp    precip
+#> 1 10.42225 1892.7073
+#> 2 10.42225 1892.7073
+#> 3 10.42225 1892.7073
+#> 4 22.49751 1798.8709
+#> 5 22.49751 1798.8709
+#> 6 25.87650  561.6971
 # env_vals <- env_vals[ , -1]  # remove ID column returned by extract()
 ```
 
@@ -359,8 +360,8 @@ env_stack_all
 #> coord. ref. : lon/lat WGS 84 (EPSG:4326) 
 #> source(s)   : memory
 #> names       :     temp,    precip, sam.eff 
-#> min values  : 10.03506,  100.9582,       0 
-#> max values  : 29.97553, 2997.4084,       6
+#> min values  : 10.02008,  102.5856,       0 
+#> max values  : 29.97091, 2999.7811,       5
 ```
 
 **Outcome**:  
@@ -640,35 +641,38 @@ multiple future scenarios
 
 ### Draft notes from CangH:
 
-Dissimilarity workflow 1. User-defined area of interest and grid
-resolution (incl. rsa shape file, 0.5 degree), generate a map of AOI and
-a data frame ‘xy’ of site centroids. 2. Site by species matrix and
-sampling effort (incl. access occurrences of user-specified taxon or
-species list, assign records to the grids, generate a raster of
-occurrence counts called sampling effort), generate a binary data frame
-‘sbs’, a richness map of sbs row sums, a single variable data frame of
-sampling effort ‘sam.eff’ and its raster map. Note, occurrence
-coordinates are only used for assigning then into grids; they are not
-needed beyond this step. 3. Site by environment matrix; extract
-environmental variables only for site centroids ‘xy’ and stack them into
-raster and data frame ‘sbe’; add ‘sam.eff’ to the stack raster and sbe.
+Dissimilarity workflow  
+1. User-defined area of interest and grid resolution (incl. rsa shape
+file, 0.5 degree), generate a map of AOI and a data frame ‘xy’ of site
+centroids.  
+2. Site by species matrix and sampling effort (incl. access occurrences
+of user-specified taxon or species list, assign records to the grids,
+generate a raster of occurrence counts called sampling effort), generate
+a binary data frame ‘sbs’, a richness map of sbs row sums, a single
+variable data frame of sampling effort ‘sam.eff’ and its raster map.
+Note, occurrence coordinates are only used for assigning then into
+grids; they are not needed beyond this step.  
+3. Site by environment matrix; extract environmental variables only for
+site centroids ‘xy’ and stack them into raster and data frame ‘sbe’; add
+‘sam.eff’ to the stack raster and sbe.  
 4. Zeta decline (sbs) and zeta decay (sbs, xy), orders 2:15. Generate
-statistics and figures, no maps. 5. Zeta.msgdm(sbs, sbe, xy), order 2,
-3, 5, 10. Generate statistics and figures, no maps. Save fitted order 2
-model ‘zeta2’. 6. Predict(zeta2) with ‘sam.eff’ in the ‘sbe’ replaced by
-‘sam.max’ a constant for all sites = max(sam.eff). Predict for the
-updated sbe and xy and produce a site by site matrix of predicted zeta
-‘zeta.now’. Run nmds for the predicted zeta matrix and plot RGB of the 3
-component scores. Clustering analyses directly using zeta.now. Generate
-main maps of dissimilarity (the rgb plot) and bioregions (from
-clustering). 7. Predict(zeta2) with appended (future scenarios)
-environmental variables and ‘sam.max’ in sbe. For m number of scenarios
-plus the present scenario (step6) and n sites of xy, this updated
-sbe.future will have k = (m+1) x n number of rows. ‘xy’ also updated
-with k rows. Predict a k by k matrix of predicted zeta ‘zeta.future’.
-Nmds and clustering of zeta.future, map sub matrices to indicate
-predicted future dissimilarity, bioregions, and temporal turnover. Note,
-step6 is redundant if step7 is needed; step7 has the same code but more
-results including those from step6 but potentially computational
-demanding. 8. Deposit all data frames, tables, maps, and standard
-metadata to zenodo
+statistics and figures, no maps.  
+5. Zeta.msgdm(sbs, sbe, xy), order 2, 3, 5, 10. Generate statistics and
+figures, no maps. Save fitted order 2 model ‘zeta2’.  
+6. Predict(zeta2) with ‘sam.eff’ in the ‘sbe’ replaced by ‘sam.max’ a
+constant for all sites = max(sam.eff). Predict for the updated sbe and
+xy and produce a site by site matrix of predicted zeta ‘zeta.now’. Run
+nmds for the predicted zeta matrix and plot RGB of the 3 component
+scores. Clustering analyses directly using zeta.now. Generate main maps
+of dissimilarity (the rgb plot) and bioregions (from clustering).  
+7. Predict(zeta2) with appended (future scenarios) environmental
+variables and ‘sam.max’ in sbe. For m number of scenarios plus the
+present scenario (step6) and n sites of xy, this updated sbe.future will
+have k = (m+1) x n number of rows. ‘xy’ also updated with k rows.
+Predict a k by k matrix of predicted zeta ‘zeta.future’. Nmds and
+clustering of zeta.future, map sub matrices to indicate predicted future
+dissimilarity, bioregions, and temporal turnover. Note, step6 is
+redundant if step7 is needed; step7 has the same code but more results
+including those from step6 but potentially computational demanding.  
+8. Deposit all data frames, tables, maps, and standard metadata to
+zenodo
