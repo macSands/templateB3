@@ -68,37 +68,626 @@
 </div>
 <!-- badges: start -->
 
-<p>The goal of templateB3 is to …</p>
+</div>
+<div class="section level1">
+<h1 id="dissmapr-a-novel-framework-for-automated-compositional-dissimilarity-and-biodiversity-turnover-analysis">dissMapR: A Novel Framework for Automated Compositional Dissimilarity and Biodiversity Turnover Analysis<a class="anchor" aria-label="anchor" href="#dissmapr-a-novel-framework-for-automated-compositional-dissimilarity-and-biodiversity-turnover-analysis"></a>
+</h1>
 <div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h2 id="tutorial">Tutorial<a class="anchor" aria-label="anchor" href="#tutorial"></a>
 </h2>
-<p>You can install the development version of templateB3 like so:</p>
+<p>This document outlines a step-by-step workflow for analyzing compositional dissimilarity and bioregionalization using <strong>dissMapR</strong>.<br>
+All code chunks below illustrate how one might implement each step in R, using various commonly used packages (e.g., <code>sf</code>, <code>terra</code>, <code>dplyr</code>, <code>ggplot2</code>, etc.).<br>
+Please note that paths to data, package names, or exact functions may need adjustment depending on your local setup.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># library(dissMapR)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yourname/templateB3" class="external-link">templateB3</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="st">'D:\\Methods\\R\\myR_Packages\\templateB3'</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="id_1-user-defined-area-of-interest-and-grid-resolution">1. User-Defined Area of Interest and Grid Resolution<a class="anchor" aria-label="anchor" href="#id_1-user-defined-area-of-interest-and-grid-resolution"></a>
 </h2>
-<p>This is a basic example which shows you how to solve a common problem: Test if this pushes OK</p>
+<div class="section level4">
+<h4 id="load-libraries">Load libraries<a class="anchor" aria-label="anchor" href="#load-libraries"></a>
+</h4>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yourname/templateB3" class="external-link">templateB3</a></span><span class="op">)</span></span>
-<span><span class="co">## basic example code</span></span></code></pre></div>
-<p>What is special about using <code>README.Rmd</code> instead of just <code>README.md</code>? You can include R chunks like so:</p>
+<code class="sourceCode R"><span><span class="co"># Load necessary libraries</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>      <span class="co"># for vector spatial data</span></span>
+<span><span class="co">#&gt; Linking to GEOS 3.13.0, GDAL 3.10.1, PROJ 9.5.1; sf_use_s2() is TRUE</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span>   <span class="co"># for raster/grid operations</span></span>
+<span><span class="co">#&gt; terra 1.8.29</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>   <span class="co"># for data manipulation</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:terra':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, union</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span> <span class="co"># for plotting</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'tidyr'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:terra':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     extract</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'data.table'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:dplyr':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     between, first, last</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:terra':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     shift</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://httr.r-lib.org/" class="external-link">httr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">geodata</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://zoo.R-Forge.R-project.org/" class="external-link">zoo</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'zoo'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:data.table':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     yearmon, yearqtr</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:terra':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     time&lt;-</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     as.Date, as.Date.numeric</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="define-the-aoi-eg-using-a-shapefile-rsashp">Define the AOI (e.g., using a shapefile ‘rsa.shp’)<a class="anchor" aria-label="anchor" href="#define-the-aoi-eg-using-a-shapefile-rsashp"></a>
+</h4>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cars</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      speed           dist       </span></span>
-<span><span class="co">#&gt;  Min.   : 4.0   Min.   :  2.00  </span></span>
-<span><span class="co">#&gt;  1st Qu.:12.0   1st Qu.: 26.00  </span></span>
-<span><span class="co">#&gt;  Median :15.0   Median : 36.00  </span></span>
-<span><span class="co">#&gt;  Mean   :15.4   Mean   : 42.98  </span></span>
-<span><span class="co">#&gt;  3rd Qu.:19.0   3rd Qu.: 56.00  </span></span>
-<span><span class="co">#&gt;  Max.   :25.0   Max.   :120.00</span></span></code></pre></div>
-<p>You’ll still need to render <code>README.Rmd</code> regularly, to keep <code>README.md</code> up-to-date. <code>devtools::build_readme()</code> is handy for this.</p>
-<p>You can also embed plots, for example:</p>
-<p><img src="reference/figures/README-pressure-1.png" width="100%"></p>
-<p>In that case, don’t forget to commit and push the resulting figure files, so they display on GitHub and CRAN.</p>
+<code class="sourceCode R"><span><span class="co"># Adjust the path and layer name as needed</span></span>
+<span><span class="co"># aoi &lt;- st_read("D:/Methods/R/myR_Packages/all_B3_packages/dissMapR/data/rsa.shp")</span></span>
+<span><span class="co"># aoi &lt;- st_read(system.file("data", "rsa.shp", package = "dissMapR"))</span></span>
+<span><span class="va">aoi</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="st">"D:/Methods/R/myR_Packages/templateB3/data/rsa.shp"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Reading layer `rsa' from data source </span></span>
+<span><span class="co">#&gt;   `D:\Methods\R\myR_Packages\templateB3\data\rsa.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt; Simple feature collection with 1 feature and 1 field</span></span>
+<span><span class="co">#&gt; Geometry type: POLYGON</span></span>
+<span><span class="co">#&gt; Dimension:     XY</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 16.45802 ymin: -34.83514 xmax: 32.89125 ymax: -22.12661</span></span>
+<span><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
+<span><span class="co"># aoi &lt;- st_read(system.file("extdata", "rsa.shp", package = "dissMapR"))</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="generate-grid-and-centroids-data-frame">Generate Grid and Centroids Data Frame<a class="anchor" aria-label="anchor" href="#generate-grid-and-centroids-data-frame"></a>
+</h4>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#### Grid Resolution (e.g., 0.5 degrees)</span></span>
+<span><span class="va">grid_res</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
+<span></span>
+<span><span class="co"># Create blank raster template with grid_res over the AOI</span></span>
+<span><span class="co"># Use terra::rast() and the extent (bounding box) from 'aoi'</span></span>
+<span><span class="va">r_template</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/ext.html" class="external-link">ext</a></span><span class="op">(</span><span class="va">aoi</span><span class="op">)</span>, resolution <span class="op">=</span> <span class="va">grid_res</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">aoi</span><span class="op">)</span><span class="op">$</span><span class="va">wkt</span><span class="op">)</span></span>
+<span><span class="va">r_template</span></span>
+<span><span class="co">#&gt; class       : SpatRaster </span></span>
+<span><span class="co">#&gt; dimensions  : 25, 33, 1  (nrow, ncol, nlyr)</span></span>
+<span><span class="co">#&gt; resolution  : 0.4979767, 0.5083412  (x, y)</span></span>
+<span><span class="co">#&gt; extent      : 16.45802, 32.89125, -34.83514, -22.12661  (xmin, xmax, ymin, ymax)</span></span>
+<span><span class="co">#&gt; coord. ref. : lon/lat WGS 84 (EPSG:4326)</span></span>
+<span></span>
+<span><span class="co"># Convert raster cell centroids to a data frame (x = longitude, y = latitude)</span></span>
+<span><span class="va">xy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/crds.html" class="external-link">crds</a></span><span class="op">(</span><span class="va">r_template</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">xy</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">xy</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 825   2</span></span>
+<span></span>
+<span><span class="co"># Optional: clip out grid cells that fall outside the AOI boundary</span></span>
+<span><span class="co"># Convert xy -&gt; sf -&gt; spatial filter</span></span>
+<span><span class="va">xy_sf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">xy</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">aoi</span><span class="op">)</span>, remove <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">xy_aoi</span> <span class="op">&lt;-</span> <span class="va">xy_sf</span><span class="op">[</span><span class="va">aoi</span>, <span class="op">]</span>  <span class="co"># intersection</span></span>
+<span><span class="va">xy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">xy_aoi</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">xy</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 465   2</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="visualise-aoi-grid-on-map">Visualise AOI Grid on Map<a class="anchor" aria-label="anchor" href="#visualise-aoi-grid-on-map"></a>
+</h4>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Quick visualization: AOI + centroid points</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="st">"lightgray"</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">xy</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"blue"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Area of Interest with 0.5° Grid"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-map_aoi-1.png" width="100%"></p>
+<p><strong>Outcome</strong>:<br>
+- A map of the AOI with 0.5° grid cells<br>
+- A data frame <code>xy</code> containing centroid coordinates for each site (grid cell)</p>
 </div>
 </div>
+<div class="section level2">
+<h2 id="id_2-site-by-species-matrix-and-sampling-effort">2. Site-by-Species Matrix and Sampling Effort<a class="anchor" aria-label="anchor" href="#id_2-site-by-species-matrix-and-sampling-effort"></a>
+</h2>
+<div class="section level4">
+<h4 id="occurrence_data">Occurrence_Data<a class="anchor" aria-label="anchor" href="#occurrence_data"></a>
+</h4>
+<p>Suppose you have occurrence data with fields: species, longitude, latitude (e.g., from GBIF, local CSV, etc.).</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Simulate for demonstration</span></span>
+<span><span class="va">occ_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SpeciesA"</span>, <span class="st">"SpeciesB"</span>, <span class="st">"SpeciesC"</span><span class="op">)</span>, <span class="fl">1000</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">aoi</span><span class="op">)</span><span class="op">[</span><span class="st">"xmin"</span><span class="op">]</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">aoi</span><span class="op">)</span><span class="op">[</span><span class="st">"xmax"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  y  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">aoi</span><span class="op">)</span><span class="op">[</span><span class="st">"ymin"</span><span class="op">]</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">aoi</span><span class="op">)</span><span class="op">[</span><span class="st">"ymax"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Assign each record to a grid cell based on coordinates:</span></span>
+<span><span class="co"># Convert 'xy' to a raster to facilitate cell lookups</span></span>
+<span><span class="va">r_id</span> <span class="op">&lt;-</span> <span class="va">r_template</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">r_id</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">ncell</a></span><span class="op">(</span><span class="va">r_id</span><span class="op">)</span>  <span class="co"># each cell gets a unique ID</span></span>
+<span></span>
+<span><span class="co"># Convert occurrence data to SpatVector (terra) for cell lookups</span></span>
+<span><span class="va">occ_vect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">occ_data</span>, geom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/crs.html" class="external-link">crs</a></span><span class="op">(</span><span class="va">r_template</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Identify cell ID for each occurrence</span></span>
+<span><span class="va">cell_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/xyCellFrom.html" class="external-link">cellFromXY</a></span><span class="op">(</span><span class="va">r_id</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/geometry.html" class="external-link">geom</a></span><span class="op">(</span><span class="va">occ_vect</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">occ_data</span><span class="op">$</span><span class="va">cell_id</span> <span class="op">&lt;-</span> <span class="va">cell_ids</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">occ_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1000    4</span></span>
+<span></span>
+<span><span class="co"># Filter out occurrences that fall outside the defined AOI grid</span></span>
+<span><span class="va">occ_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">occ_data</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">cell_id</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">occ_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    species        x         y cell_id</span></span>
+<span><span class="co">#&gt; 1 SpeciesA 19.44618 -22.57901       7</span></span>
+<span><span class="co">#&gt; 2 SpeciesA 22.19479 -26.70060     276</span></span>
+<span><span class="co">#&gt; 3 SpeciesC 26.10377 -34.67723     812</span></span>
+<span><span class="co">#&gt; 4 SpeciesA 18.86806 -24.25060     137</span></span>
+<span><span class="co">#&gt; 5 SpeciesB 20.07597 -31.82684     635</span></span>
+<span><span class="co">#&gt; 6 SpeciesC 29.50120 -28.50347     423</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">occ_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1000    4</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="unique-site-codes-with-coordinates">Unique site codes with coordinates<a class="anchor" aria-label="anchor" href="#unique-site-codes-with-coordinates"></a>
+</h4>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Site coordinates</span></span>
+<span><span class="co"># Count number of occurrences per cell as a measure of sampling effort</span></span>
+<span><span class="va">sites_xy</span> <span class="op">&lt;-</span> <span class="va">occ_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cell_id</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>effort <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>            richness <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html" class="external-link">n_distinct</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `summarise()` has grouped output by 'cell_id', 'x'. You can override using the</span></span>
+<span><span class="co">#&gt; `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sites_xy</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell_id"</span>,<span class="st">"x"</span>,<span class="st">"y"</span>,<span class="st">"effort"</span>,<span class="st">"richness"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sites_xy</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1000    5</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sites_xy</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 × 5</span></span>
+<span><span class="co">#&gt; # Groups:   cell_id, x [6]</span></span>
+<span><span class="co">#&gt;   cell_id     x     y effort richness</span></span>
+<span><span class="co">#&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;int&gt;    &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1       1  16.9 -22.6      1        1</span></span>
+<span><span class="co">#&gt; 2       4  18.3 -22.6      1        1</span></span>
+<span><span class="co">#&gt; 3       4  18.3 -22.6      1        1</span></span>
+<span><span class="co">#&gt; 4       4  18.3 -22.4      1        1</span></span>
+<span><span class="co">#&gt; 5       6  19.0 -22.1      1        1</span></span>
+<span><span class="co">#&gt; 6       7  19.4 -22.6      1        1</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="sampling-effort">Sampling Effort<a class="anchor" aria-label="anchor" href="#sampling-effort"></a>
+</h4>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Count number of occurrences per cell as a measure of sampling effort</span></span>
+<span><span class="va">effort_df</span> <span class="op">&lt;-</span> <span class="va">occ_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cell_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># ,decimalLongitude,decimalLatitude</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n_occurrences <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">effort_df</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 580   2</span></span>
+<span></span>
+<span><span class="co"># Rasterize sampling effort (optional for mapping)</span></span>
+<span><span class="va">sam_eff_rast</span> <span class="op">&lt;-</span> <span class="va">r_id</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">sam_eff_rast</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">sam_eff_rast</span><span class="op">)</span><span class="op">[</span><span class="va">effort_df</span><span class="op">$</span><span class="va">cell_id</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">effort_df</span><span class="op">$</span><span class="va">n_occurrences</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="site-by-species-matrix">Site by Species Matrix<a class="anchor" aria-label="anchor" href="#site-by-species-matrix"></a>
+</h4>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># For presence-absence, pivot occurrence data to wide format:</span></span>
+<span><span class="co"># occ_data = c('species', 'x', 'y', 'cell_id')</span></span>
+<span><span class="va">sbs_long</span> <span class="op">&lt;-</span> <span class="va">occ_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">cell_id</span>, <span class="va">species</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>presence <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sbs_long</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 816   3</span></span>
+<span></span>
+<span><span class="co"># Ensure we have a row for every cell (site) in 'xy'</span></span>
+<span><span class="va">all_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>cell_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">ncell</a></span><span class="op">(</span><span class="va">r_id</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">sbs_wide</span> <span class="op">&lt;-</span> <span class="va">all_cells</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">sbs_long</span>, by <span class="op">=</span> <span class="st">"cell_id"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>id_cols <span class="op">=</span> <span class="va">cell_id</span>, names_from <span class="op">=</span> <span class="va">species</span>, values_from <span class="op">=</span> <span class="va">presence</span>, values_fill <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sbs_wide</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 825   5</span></span>
+<span></span>
+<span><span class="co"># sbs - site-by-species matrix</span></span>
+<span><span class="va">sbs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">sbs_wide</span><span class="op">[</span> , <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>  <span class="co"># remove cell_id column</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/row.names.html" class="external-link">row.names</a></span><span class="op">(</span><span class="va">sbs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">sbs_wide</span><span class="op">$</span><span class="va">cell_id</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sbs</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 825   4</span></span>
+<span></span>
+<span><span class="co"># Summarize sampling effort in a vector aligned with sbs rows</span></span>
+<span><span class="va">sam.eff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sbs</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">sam.eff</span><span class="op">[</span><span class="va">effort_df</span><span class="op">$</span><span class="va">cell_id</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">effort_df</span><span class="op">$</span><span class="va">n_occurrences</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="optional-richness-and-sampling-effort-maps">Optional Richness and Sampling Effort Maps<a class="anchor" aria-label="anchor" href="#optional-richness-and-sampling-effort-maps"></a>
+</h4>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Species richness map (row sums of sbs)</span></span>
+<span><span class="va">richness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rowSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">sbs</span><span class="op">)</span></span>
+<span><span class="va">richness_rast</span> <span class="op">&lt;-</span> <span class="va">r_id</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">richness_rast</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">richness_rast</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">richness</span><span class="op">)</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">richness</span></span>
+<span></span>
+<span><span class="co"># Quick plot of sampling effort + species richness</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sam_eff_rast</span>, main <span class="op">=</span> <span class="st">"Sampling Effort"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-map_rich-1.png" width="100%"></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">richness_rast</span>, main <span class="op">=</span> <span class="st">"Species Richness"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-map_rich-2.png" width="100%"></p>
+<p><strong>Outcome</strong>:<br>
+- <strong>sbs</strong>: binary presence–absence (site-by-species)<br>
+- <strong>sam.eff</strong>: numeric sampling effort per site<br>
+- Optional raster maps for sampling effort and species richness</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="id_3-site-by-environment-matrix">3. Site-by-Environment Matrix<a class="anchor" aria-label="anchor" href="#id_3-site-by-environment-matrix"></a>
+</h2>
+<div class="section level4">
+<h4 id="environmental-data">Environmental Data<a class="anchor" aria-label="anchor" href="#environmental-data"></a>
+</h4>
+<p>Assume we have environmental rasters (temp, precip, etc.) with same CRS and extent</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Here we just simulate them:</span></span>
+<span><span class="va">env1</span> <span class="op">&lt;-</span> <span class="va">r_template</span>; <span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">env1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">ncell</a></span><span class="op">(</span><span class="va">r_template</span><span class="op">)</span>, min <span class="op">=</span> <span class="fl">10</span>, max <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>  <span class="co"># e.g., temperature</span></span>
+<span><span class="va">env2</span> <span class="op">&lt;-</span> <span class="va">r_template</span>; <span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">env2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">ncell</a></span><span class="op">(</span><span class="va">r_template</span><span class="op">)</span>, min <span class="op">=</span> <span class="fl">100</span>, max <span class="op">=</span> <span class="fl">3000</span><span class="op">)</span> <span class="co"># e.g., precipitation</span></span>
+<span></span>
+<span><span class="co"># Combine into a SpatRaster</span></span>
+<span><span class="va">env_stack</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">env1</span>, <span class="va">env2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">env_stack</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"temp"</span>, <span class="st">"precip"</span><span class="op">)</span></span>
+<span><span class="va">env_stack</span></span>
+<span><span class="co">#&gt; class       : SpatRaster </span></span>
+<span><span class="co">#&gt; dimensions  : 25, 33, 2  (nrow, ncol, nlyr)</span></span>
+<span><span class="co">#&gt; resolution  : 0.4979767, 0.5083412  (x, y)</span></span>
+<span><span class="co">#&gt; extent      : 16.45802, 32.89125, -34.83514, -22.12661  (xmin, xmax, ymin, ymax)</span></span>
+<span><span class="co">#&gt; coord. ref. : lon/lat WGS 84 (EPSG:4326) </span></span>
+<span><span class="co">#&gt; source(s)   : memory</span></span>
+<span><span class="co">#&gt; names       :     temp,    precip </span></span>
+<span><span class="co">#&gt; min values  : 10.03506,  100.9582 </span></span>
+<span><span class="co">#&gt; max values  : 29.97553, 2997.4084</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="extract-environmental-values">Extract Environmental Values<a class="anchor" aria-label="anchor" href="#extract-environmental-values"></a>
+</h4>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Extract environmental values at each site centroid</span></span>
+<span><span class="va">env_vals</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">env_stack</span>, <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">sites_xy</span><span class="op">$</span><span class="va">x</span>, <span class="va">sites_xy</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">env_vals</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       temp   precip</span></span>
+<span><span class="co">#&gt; 1 29.92914 1423.596</span></span>
+<span><span class="co">#&gt; 2 26.02424 2516.053</span></span>
+<span><span class="co">#&gt; 3 26.02424 2516.053</span></span>
+<span><span class="co">#&gt; 4 26.02424 2516.053</span></span>
+<span><span class="co">#&gt; 5 24.65696 2784.449</span></span>
+<span><span class="co">#&gt; 6 22.96617 2652.698</span></span>
+<span><span class="co"># env_vals &lt;- env_vals[ , -1]  # remove ID column returned by extract()</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="build-sbe">Build SBE<a class="anchor" aria-label="anchor" href="#build-sbe"></a>
+</h4>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Combine environment variables + sampling effort into one data frame</span></span>
+<span><span class="va">sbe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">env_vals</span>, <span class="va">sites_xy</span><span class="op">$</span><span class="va">effort</span><span class="op">)</span>  <span class="co"># site-by-environment, includes sampling effort</span></span>
+<span><span class="co"># env_vals &lt;- cbind(sites_xy[, c(1,4,5)], env_vals)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sbe</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1000    3</span></span>
+<span><span class="co"># colnames(sbe) &lt;- c("temp", "precip", "sam.eff")</span></span>
+<span></span>
+<span><span class="co"># We'll also update the env_stack to include sampling effort if desired</span></span>
+<span><span class="va">sam_eff_raster</span> <span class="op">&lt;-</span> <span class="va">sam_eff_rast</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sam_eff_raster</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"sam.eff"</span></span>
+<span><span class="va">env_stack_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">env_stack</span>, <span class="va">sam_eff_raster</span><span class="op">)</span></span>
+<span><span class="va">env_stack_all</span></span>
+<span><span class="co">#&gt; class       : SpatRaster </span></span>
+<span><span class="co">#&gt; dimensions  : 25, 33, 3  (nrow, ncol, nlyr)</span></span>
+<span><span class="co">#&gt; resolution  : 0.4979767, 0.5083412  (x, y)</span></span>
+<span><span class="co">#&gt; extent      : 16.45802, 32.89125, -34.83514, -22.12661  (xmin, xmax, ymin, ymax)</span></span>
+<span><span class="co">#&gt; coord. ref. : lon/lat WGS 84 (EPSG:4326) </span></span>
+<span><span class="co">#&gt; source(s)   : memory</span></span>
+<span><span class="co">#&gt; names       :     temp,    precip, sam.eff </span></span>
+<span><span class="co">#&gt; min values  : 10.03506,  100.9582,       0 </span></span>
+<span><span class="co">#&gt; max values  : 29.97553, 2997.4084,       6</span></span></code></pre></div>
+<p><strong>Outcome</strong>:<br>
+- <strong>sbe</strong>: site-by-environment matrix (including sampling effort)<br>
+- Updated raster stack (<code>env_stack_all</code>) with environment layers + sampling effort</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="id_4-zeta-decline-and-zeta-decay">4. Zeta Decline and Zeta Decay<a class="anchor" aria-label="anchor" href="#id_4-zeta-decline-and-zeta-decay"></a>
+</h2>
+<div class="section level4">
+<h4 id="zeta-decline">Zeta Decline<a class="anchor" aria-label="anchor" href="#zeta-decline"></a>
+</h4>
+<p>We’ll assume dissMapR or zetadiv provides functions for multi-site zeta.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># For example, using the 'zetadiv' package:</span></span>
+<span><span class="co"># library(zetadiv)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # sbs must be a site-by-species matrix (rows=sites, columns=species)</span></span>
+<span><span class="co"># zeta_orders &lt;- 1:5</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Run `Zeta.decline.ex`</span></span>
+<span><span class="co"># zeta.decline &lt;- Zeta.decline.ex(sbs[,-3],</span></span>
+<span><span class="co">#                                 orders = zeta_orders,</span></span>
+<span><span class="co">#                                 plot = FALSE)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Plot zeta decline</span></span>
+<span><span class="co"># plot(zeta_orders,</span></span>
+<span><span class="co">#      zeta.decline$zeta.val,</span></span>
+<span><span class="co">#      type = "b",</span></span>
+<span><span class="co">#      xlab = "Order", ylab = "Mean Zeta Diversity",</span></span>
+<span><span class="co">#      main = "Zeta Decline")</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="zeta-decay">Zeta Decay<a class="anchor" aria-label="anchor" href="#zeta-decay"></a>
+</h4>
+<p>Evaluate how zeta diversity changes with distance</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sbs</span><span class="op">[</span>,<span class="op">-</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 825   3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sites_xy</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1000    5</span></span>
+<span></span>
+<span><span class="co"># zeta.decay &lt;- Zeta.ddecay(</span></span>
+<span><span class="co">#   data.spec   = sbs[,-3],          # species presence-absence matrix</span></span>
+<span><span class="co">#   # xy          = cbind(xy_sf$x,xy_sf$y),# site coordinates</span></span>
+<span><span class="co">#   xy          = cbind(sites_xy$x,sites_xy$y),# site coordinates</span></span>
+<span><span class="co">#   order       = 2,            # zeta order of interest (e.g., 2)</span></span>
+<span><span class="co">#   method      = "mean",       # or "sum"</span></span>
+<span><span class="co">#   sam         = 100,           # number of distance bins (or set distances manually)</span></span>
+<span><span class="co">#   plot        = FALSE         # set to TRUE to auto-plot</span></span>
+<span><span class="co"># )</span></span>
+<span></span>
+<span><span class="co"># The returned object contains distance bins (or pairs of sites, etc.) and</span></span>
+<span><span class="co"># average zeta diversity for each distance bin.</span></span>
+<span></span>
+<span><span class="co"># Plot the result:</span></span>
+<span><span class="co"># Plot.zeta.ddecay(zeta.decay)</span></span>
+<span></span>
+<span><span class="co"># Multiple-Order Distance Decay Example</span></span>
+<span><span class="co"># If you want to see how zeta distance-decay behaves across multiple orders,</span></span>
+<span><span class="co"># you can use Zeta.ddecays():</span></span>
+<span></span>
+<span><span class="co"># zeta.decays &lt;- Zeta.ddecays(</span></span>
+<span><span class="co">#   data.spec   = sbs[,-3],</span></span>
+<span><span class="co">#   xy          = cbind(sites_xy$x,sites_xy$y),</span></span>
+<span><span class="co">#   orders      = zeta_orders,       # or pick any vector of orders</span></span>
+<span><span class="co">#   method      = "mean",</span></span>
+<span><span class="co">#   sam         = 1000,</span></span>
+<span><span class="co">#   plot        = FALSE</span></span>
+<span><span class="co"># )</span></span>
+<span></span>
+<span><span class="co"># Then visualize:</span></span>
+<span><span class="co"># Plot.zeta.ddecays(zeta.decays)</span></span></code></pre></div>
+<p><strong>Outcome</strong>:<br>
+- Measures of <strong>zeta decline</strong> across orders<br>
+- Measures of <strong>zeta decay</strong> with distance<br>
+- Plots illustrating these relationships</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="id_5-ms-gdm-with-zetamsgdmsbs-sbe-xy">5. MS-GDM with <code>Zeta.msgdm(sbs, sbe, xy)</code>
+<a class="anchor" aria-label="anchor" href="#id_5-ms-gdm-with-zetamsgdmsbs-sbe-xy"></a>
+</h2>
+<div class="section level4">
+<h4 id="fit-multisite-gdm">Fit MultiSite GDM<a class="anchor" aria-label="anchor" href="#fit-multisite-gdm"></a>
+</h4>
+<p>We now assume dissMapR has a function Zeta.msgdm() for multi-site GDM (this is hypothetical; adapt based on actual package usage)</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Fit MS-GDM for orders = 2, 3, 5, 10</span></span>
+<span><span class="va">orders_to_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sbs</span><span class="op">[</span>,<span class="op">-</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 825   3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sbe</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1000    3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sites_xy</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1000    5</span></span>
+<span><span class="co"># fit &lt;- Zeta.msgdm(sbs[,-3],</span></span>
+<span><span class="co">#                   sbe,</span></span>
+<span><span class="co">#                   sites_xy[,2:3],</span></span>
+<span><span class="co">#                   order = orders_to_fit,</span></span>
+<span><span class="co">#                   reg.type = 'ispline',</span></span>
+<span><span class="co">#                   sam = 100)</span></span>
+<span></span>
+<span><span class="co"># Summaries or model stats</span></span>
+<span><span class="co"># summary(fit$model)</span></span>
+<span></span>
+<span><span class="co"># dev.new()</span></span>
+<span><span class="co"># graphics::plot(fit$model)</span></span></code></pre></div>
+<p><strong>Outcome</strong>:<br>
+- <strong>zeta2</strong>: fitted MS-GDM for order 2<br>
+- Additional model objects for orders 3, 5, and 10</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="id_6-prediction-with-zeta2-present-scenario">6. Prediction with <code>zeta2</code> (Present Scenario)<a class="anchor" aria-label="anchor" href="#id_6-prediction-with-zeta2-present-scenario"></a>
+</h2>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># # Uniform Sampling</span></span>
+<span><span class="co"># # Replace sampling effort in 'sbe' with its maximum value</span></span>
+<span><span class="co"># sam.max &lt;- max(sbe$sam.eff)</span></span>
+<span><span class="co"># sbe_now &lt;- sbe</span></span>
+<span><span class="co"># sbe_now$sam.eff &lt;- sam.max</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Predict zeta2</span></span>
+<span><span class="co"># zeta.now &lt;- predict(zeta2, newdata = sbe_now)</span></span>
+<span><span class="co"># # zeta.now should be a site-by-site matrix of predicted dissimilarities (order=2)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Visualize zeta_now</span></span>
+<span><span class="co"># # (i) NMDS</span></span>
+<span><span class="co"># library(vegan)</span></span>
+<span><span class="co"># nmds_now &lt;- metaMDS(zeta.now, k = 3, try = 20)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Extract NMDS coordinates</span></span>
+<span><span class="co"># nmds_coords &lt;- as.data.frame(scores(nmds_now))</span></span>
+<span><span class="co"># colnames(nmds_coords) &lt;- c("NMDS1", "NMDS2", "NMDS3")</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # (ii) RGB composite plot from NMDS axes</span></span>
+<span><span class="co"># # Combine NMDS coords with site centroids 'xy'</span></span>
+<span><span class="co"># nmds_plot_df &lt;- cbind(xy, nmds_coords)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># ggplot(nmds_plot_df, aes(x = x, y = y)) +</span></span>
+<span><span class="co">#   geom_point(aes(color = rgb(</span></span>
+<span><span class="co">#     scales::rescale(NMDS1),</span></span>
+<span><span class="co">#     scales::rescale(NMDS2),</span></span>
+<span><span class="co">#     scales::rescale(NMDS3)</span></span>
+<span><span class="co">#   )), size = 2) +</span></span>
+<span><span class="co">#   scale_color_identity() +</span></span>
+<span><span class="co">#   ggtitle("Present Scenario: NMDS RGB Composite") +</span></span>
+<span><span class="co">#   theme_minimal()</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # (iii) Clustering + Bioregions</span></span>
+<span><span class="co"># # Example: hierarchical clustering</span></span>
+<span><span class="co"># hc_now &lt;- hclust(as.dist(zeta.now), method = "ward.D2")</span></span>
+<span><span class="co"># # Choose number of clusters</span></span>
+<span><span class="co"># k &lt;- 5</span></span>
+<span><span class="co"># bioregions_now &lt;- cutree(hc_now, k = k)</span></span></code></pre></div>
+<p><strong>Outcome</strong>:<br>
+- <strong>zeta.now</strong>: predicted site-by-site dissimilarity matrix under uniform sampling<br>
+- NMDS-based RGB map<br>
+- Bioregional clusters (e.g., 5 clusters)</p>
+</div>
+<div class="section level2">
+<h2 id="id_7-prediction-with-zeta2-future-scenarios">7. Prediction with <code>zeta2</code> (Future Scenarios)<a class="anchor" aria-label="anchor" href="#id_7-prediction-with-zeta2-future-scenarios"></a>
+</h2>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Prepare Future Env</span></span>
+<span><span class="co"># # Suppose we have m future scenarios for environment (temp, precip).</span></span>
+<span><span class="co"># # We'll combine them so that all scenarios + present are in one large sbe data frame.</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Create a placeholder example for 2 future scenarios</span></span>
+<span><span class="co"># env1_future1 &lt;- env1; values(env1_future1) &lt;- values(env1_future1) + 2</span></span>
+<span><span class="co"># env2_future1 &lt;- env2; values(env2_future1) &lt;- values(env2_future1) + 100</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># env1_future2 &lt;- env1; values(env1_future2) &lt;- values(env1_future2) + 4</span></span>
+<span><span class="co"># env2_future2 &lt;- env2; values(env2_future2) &lt;- values(env2_future2) + 200</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Extract for each scenario</span></span>
+<span><span class="co"># env_vals_future1 &lt;- extract(c(env1_future1, env2_future1), cbind(xy$x, xy$y))[, -1]</span></span>
+<span><span class="co"># env_vals_future2 &lt;- extract(c(env1_future2, env2_future2), cbind(xy$x, xy$y))[, -1]</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Combine into data frames, reusing sam.max</span></span>
+<span><span class="co"># sbe_future1 &lt;- cbind(env_vals_future1, sam.eff = sam.max)</span></span>
+<span><span class="co"># colnames(sbe_future1) &lt;- c("temp", "precip", "sam.eff")</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># sbe_future2 &lt;- cbind(env_vals_future2, sam.eff = sam.max)</span></span>
+<span><span class="co"># colnames(sbe_future2) &lt;- c("temp", "precip", "sam.eff")</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Combine present (sbe_now) + 2 future scenarios:</span></span>
+<span><span class="co"># sbe_all &lt;- rbind(sbe_now, sbe_future1, sbe_future2)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Predict Future</span></span>
+<span><span class="co"># zeta.future &lt;- predict(zeta2, newdata = sbe_all)</span></span>
+<span><span class="co"># # This will be a ((m+1)*n x (m+1)*n) dissimilarity matrix</span></span>
+<span><span class="co"># # where m=2 (two future scenarios), n=number of sites</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Visualize Future</span></span>
+<span><span class="co"># # We can subset 'zeta.future' to map each scenario individually</span></span>
+<span><span class="co"># # For example, the first 'n' rows/cols = present, next 'n' = future1, last 'n' = future2</span></span>
+<span><span class="co"># n_sites &lt;- nrow(sbe_now)</span></span>
+<span><span class="co"># present_idx   &lt;- 1:n_sites</span></span>
+<span><span class="co"># future1_idx   &lt;- (n_sites+1):(2*n_sites)</span></span>
+<span><span class="co"># future2_idx   &lt;- (2*n_sites+1):(3*n_sites)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># zeta.present  &lt;- zeta.future[present_idx, present_idx]</span></span>
+<span><span class="co"># zeta.fut1     &lt;- zeta.future[future1_idx, future1_idx]</span></span>
+<span><span class="co"># zeta.fut2     &lt;- zeta.future[future2_idx, future2_idx]</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Optionally run NMDS or clustering for each scenario</span></span>
+<span><span class="co"># # Here, just an example with future scenario 1</span></span>
+<span><span class="co"># nmds_fut1 &lt;- metaMDS(zeta.fut1, k = 3, try = 20)</span></span>
+<span><span class="co"># nmds_coords_fut1 &lt;- as.data.frame(scores(nmds_fut1))</span></span>
+<span><span class="co"># # (Plot similarly as above, but note the site order matches rows in future1_idx)</span></span></code></pre></div>
+<p><strong>Outcome</strong>:<br>
+- <strong>zeta.future</strong>: site-by-site predicted dissimilarities for present + multiple future scenarios<br>
+- Tools for NMDS/clustering to map future shifts in bioregions</p>
+</div>
+<div class="section level2">
+<h2 id="id_8-data-publication-to-zenodo">8. Data Publication to Zenodo<a class="anchor" aria-label="anchor" href="#id_8-data-publication-to-zenodo"></a>
+</h2>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Prepare Outputs</span></span>
+<span><span class="co"># Collect your final data frames and raster objects:</span></span>
+<span><span class="co">#   - sbs, xy, sbe, zeta.now, zeta.future, etc.</span></span>
+<span><span class="co">#   - Maps (sampling effort, zeta plots, NMDS RGB maps, cluster results)</span></span>
+<span><span class="co">#   - Model objects (zeta2, etc.)</span></span>
+<span></span>
+<span><span class="co"># # Save them to disk as CSV, RDS, GeoTIFF, etc.</span></span>
+<span><span class="co"># saveRDS(sbs, "sbs.rds")</span></span>
+<span><span class="co"># saveRDS(xy, "xy.rds")</span></span>
+<span><span class="co"># saveRDS(sbe, "sbe.rds")</span></span>
+<span><span class="co"># saveRDS(zeta.now, "zeta_now.rds")</span></span>
+<span><span class="co"># saveRDS(zeta.future, "zeta_future.rds")</span></span>
+<span><span class="co"># # ... etc.</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Zenodo Upload</span></span>
+<span><span class="co"># # Use zen4R or manual upload:</span></span>
+<span><span class="co"># # install.packages("zen4R")</span></span>
+<span><span class="co"># library(zen4R)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Provide your Zenodo token, metadata, etc.</span></span>
+<span><span class="co"># zenodo &lt;- ZenodoManager$new(token = "YOUR_ZENODO_TOKEN")</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># # Create a new deposition, set metadata</span></span>
+<span><span class="co"># my_deposition &lt;- zenodo$createEmptyRecord()</span></span>
+<span><span class="co"># my_deposition &lt;- zenodo$setMetadata(</span></span>
+<span><span class="co">#   my_deposition,</span></span>
+<span><span class="co">#   title = "Multi-Site Dissimilarity Data &amp; Models",</span></span>
+<span><span class="co">#   upload_type = "dataset",</span></span>
+<span><span class="co">#   description = "Data and model outputs from the dissMapR workflow.",</span></span>
+<span><span class="co">#   creators = list(</span></span>
+<span><span class="co">#     list(name = "Your Name", affiliation = "Your Institution")</span></span>
+<span><span class="co">#   )</span></span>
+<span><span class="co"># )</span></span>
+<span></span>
+<span><span class="co"># Then upload files:</span></span>
+<span><span class="co"># zenodo$uploadFile("sbs.rds", my_deposition$id)</span></span>
+<span><span class="co"># zenodo$uploadFile("sbe.rds", my_deposition$id)</span></span>
+<span><span class="co"># etc.</span></span>
+<span></span>
+<span><span class="co"># Finally, publish:</span></span>
+<span><span class="co"># zenodo$publishRecord(my_deposition$id)</span></span></code></pre></div>
+<p><strong>Outcome</strong>:<br>
+- All necessary data (e.g., <code>sbs</code>, <code>xy</code>, <code>sbe</code>, <code>zeta.now</code>, <code>zeta.future</code>, figures) are archived on Zenodo for reproducibility.</p>
+<table class="table">
+<colgroup><col width="100%"></colgroup>
+<tbody>
+<tr class="odd">
+<td>## Final Remarks</td>
+</tr>
+<tr class="even">
+<td>- This script demonstrates the <strong>core</strong> steps for dissecting compositional turnover and bioregional patterns under present or future scenarios using <code>dissMapR</code> (and related packages). - Each step can be adapted to use your specific data sources and packages. - Always verify spatial extents, coordinate reference systems, and the validity of environmental data before scaling up analyses.</td>
+</tr>
+</tbody>
+</table>
+<div class="section level3">
+<h3 id="draft-notes-from-cangh">Draft notes from CangH:<a class="anchor" aria-label="anchor" href="#draft-notes-from-cangh"></a>
+</h3>
+<p>Dissimilarity workflow 1. User-defined area of interest and grid resolution (incl. rsa shape file, 0.5 degree), generate a map of AOI and a data frame ‘xy’ of site centroids. 2. Site by species matrix and sampling effort (incl. access occurrences of user-specified taxon or species list, assign records to the grids, generate a raster of occurrence counts called sampling effort), generate a binary data frame ‘sbs’, a richness map of sbs row sums, a single variable data frame of sampling effort ‘sam.eff’ and its raster map. Note, occurrence coordinates are only used for assigning then into grids; they are not needed beyond this step. 3. Site by environment matrix; extract environmental variables only for site centroids ‘xy’ and stack them into raster and data frame ‘sbe’; add ‘sam.eff’ to the stack raster and sbe. 4. Zeta decline (sbs) and zeta decay (sbs, xy), orders 2:15. Generate statistics and figures, no maps. 5. Zeta.msgdm(sbs, sbe, xy), order 2, 3, 5, 10. Generate statistics and figures, no maps. Save fitted order 2 model ‘zeta2’. 6. Predict(zeta2) with ‘sam.eff’ in the ‘sbe’ replaced by ‘sam.max’ a constant for all sites = max(sam.eff). Predict for the updated sbe and xy and produce a site by site matrix of predicted zeta ‘zeta.now’. Run nmds for the predicted zeta matrix and plot RGB of the 3 component scores. Clustering analyses directly using zeta.now. Generate main maps of dissimilarity (the rgb plot) and bioregions (from clustering). 7. Predict(zeta2) with appended (future scenarios) environmental variables and ‘sam.max’ in sbe. For m number of scenarios plus the present scenario (step6) and n sites of xy, this updated sbe.future will have k = (m+1) x n number of rows. ‘xy’ also updated with k rows. Predict a k by k matrix of predicted zeta ‘zeta.future’. Nmds and clustering of zeta.future, map sub matrices to indicate predicted future dissimilarity, bioregions, and temporal turnover. Note, step6 is redundant if step7 is needed; step7 has the same code but more results including those from step6 but potentially computational demanding. 8. Deposit all data frames, tables, maps, and standard metadata to zenodo</p>
+</div>
+</div>
+</div>
+
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
