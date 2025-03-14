@@ -27,6 +27,7 @@
 #' @import dplyr
 #' @import geodata
 #' @import zoo
+#' @import tidyselect
 #' @export
 #'
 #' @examples
@@ -50,7 +51,7 @@ get_enviro_data = function(data,
                            time = NULL # Needed for climate CMIP6 projections
 ) {
   # Load required packages
-  required_packages = c("terra", "sf", "dplyr", "geodata", "zoo")
+  required_packages = c("terra", "sf", "dplyr", "geodata", "zoo", "tidyselect")
   lapply(required_packages, function(pkg) {
     if (!requireNamespace(pkg, quietly = TRUE)) stop("Package '", pkg, "' is required but not installed.")
   })
