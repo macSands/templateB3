@@ -13,6 +13,17 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
+Imports: 
+    data.table,
+    devtools,
+    dplyr,
+    httr,
+    tidyr,
+    geodata,
+    sf,
+    terra,
+    zoo,
+    ggplot2    
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
