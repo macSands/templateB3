@@ -82,7 +82,7 @@ Please note that paths to data, package names, or exact functions may need adjus
 <code class="sourceCode R"><span><span class="co"># library(dissMapR)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yourname/templateB3" class="external-link">templateB3</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="st">'D:\\Methods\\R\\myR_Packages\\templateB3'</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># setwd('D:\\Methods\\R\\myR_Packages\\templateB3')</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="id_1-user-defined-area-of-interest-and-grid-resolution">1. User-Defined Area of Interest and Grid Resolution<a class="anchor" aria-label="anchor" href="#id_1-user-defined-area-of-interest-and-grid-resolution"></a>
@@ -146,9 +146,10 @@ Please note that paths to data, package names, or exact functions may need adjus
 <code class="sourceCode R"><span><span class="co"># Adjust the path and layer name as needed</span></span>
 <span><span class="co"># aoi &lt;- st_read("D:/Methods/R/myR_Packages/all_B3_packages/dissMapR/data/rsa.shp")</span></span>
 <span><span class="co"># aoi &lt;- st_read(system.file("data", "rsa.shp", package = "dissMapR"))</span></span>
-<span><span class="va">aoi</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="st">"D:/Methods/R/myR_Packages/templateB3/data/rsa.shp"</span><span class="op">)</span></span>
+<span><span class="va">aoi</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="st">"D:/Methods/R/myR_Packages/templateB3/inst/extdata/rsa.shp"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Reading layer `rsa' from data source </span></span>
-<span><span class="co">#&gt;   `D:\Methods\R\myR_Packages\templateB3\data\rsa.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt;   `D:\Methods\R\myR_Packages\templateB3\inst\extdata\rsa.shp' </span></span>
+<span><span class="co">#&gt;   using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 1 feature and 1 field</span></span>
 <span><span class="co">#&gt; Geometry type: POLYGON</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -192,11 +193,11 @@ Please note that paths to data, package names, or exact functions may need adjus
 </h4>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Quick visualization: AOI + centroid points</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="st">"lightgray"</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">xy</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"blue"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Area of Interest with 0.5° Grid"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="st">"lightgray"</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span>data <span class="op">=</span> <span class="va">xy</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"blue"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Area of Interest with 0.5° Grid"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-map_aoi-1.png" width="100%"></p>
 <p><strong>Outcome</strong>:<br>
 - A map of the AOI with 0.5° grid cells<br>
@@ -236,12 +237,12 @@ Please note that paths to data, package names, or exact functions may need adjus
 <span><span class="va">occ_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">occ_data</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">cell_id</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">occ_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    species        x         y cell_id</span></span>
-<span><span class="co">#&gt; 1 SpeciesA 19.44618 -22.57901       7</span></span>
-<span><span class="co">#&gt; 2 SpeciesA 22.19479 -26.70060     276</span></span>
-<span><span class="co">#&gt; 3 SpeciesC 26.10377 -34.67723     812</span></span>
-<span><span class="co">#&gt; 4 SpeciesA 18.86806 -24.25060     137</span></span>
-<span><span class="co">#&gt; 5 SpeciesB 20.07597 -31.82684     635</span></span>
-<span><span class="co">#&gt; 6 SpeciesC 29.50120 -28.50347     423</span></span>
+<span><span class="co">#&gt; 1 SpeciesA 21.31359 -24.14628     109</span></span>
+<span><span class="co">#&gt; 2 SpeciesA 27.62681 -34.56023     815</span></span>
+<span><span class="co">#&gt; 3 SpeciesB 19.05475 -23.78736     105</span></span>
+<span><span class="co">#&gt; 4 SpeciesC 28.13970 -24.33725     156</span></span>
+<span><span class="co">#&gt; 5 SpeciesA 22.90552 -32.16872     640</span></span>
+<span><span class="co">#&gt; 6 SpeciesC 25.08964 -29.07542     447</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">occ_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1000    4</span></span></code></pre></div>
 </div>
@@ -252,8 +253,8 @@ Please note that paths to data, package names, or exact functions may need adjus
 <code class="sourceCode R"><span><span class="co"># Site coordinates</span></span>
 <span><span class="co"># Count number of occurrences per cell as a measure of sampling effort</span></span>
 <span><span class="va">sites_xy</span> <span class="op">&lt;-</span> <span class="va">occ_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cell_id</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>effort <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cell_id</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>effort <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>            richness <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html" class="external-link">n_distinct</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `summarise()` has grouped output by 'cell_id', 'x'. You can override using the</span></span>
 <span><span class="co">#&gt; `.groups` argument.</span></span>
@@ -265,12 +266,12 @@ Please note that paths to data, package names, or exact functions may need adjus
 <span><span class="co">#&gt; # Groups:   cell_id, x [6]</span></span>
 <span><span class="co">#&gt;   cell_id     x     y effort richness</span></span>
 <span><span class="co">#&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;int&gt;    &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1       1  16.9 -22.6      1        1</span></span>
-<span><span class="co">#&gt; 2       4  18.3 -22.6      1        1</span></span>
-<span><span class="co">#&gt; 3       4  18.3 -22.6      1        1</span></span>
-<span><span class="co">#&gt; 4       4  18.3 -22.4      1        1</span></span>
-<span><span class="co">#&gt; 5       6  19.0 -22.1      1        1</span></span>
-<span><span class="co">#&gt; 6       7  19.4 -22.6      1        1</span></span></code></pre></div>
+<span><span class="co">#&gt; 1       3  17.6 -22.3      1        1</span></span>
+<span><span class="co">#&gt; 2       3  17.9 -22.4      1        1</span></span>
+<span><span class="co">#&gt; 3       3  17.9 -22.2      1        1</span></span>
+<span><span class="co">#&gt; 4       4  18.0 -22.4      1        1</span></span>
+<span><span class="co">#&gt; 5       4  18.1 -22.4      1        1</span></span>
+<span><span class="co">#&gt; 6       5  18.7 -22.5      1        1</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="sampling-effort">Sampling Effort<a class="anchor" aria-label="anchor" href="#sampling-effort"></a>
@@ -278,10 +279,10 @@ Please note that paths to data, package names, or exact functions may need adjus
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Count number of occurrences per cell as a measure of sampling effort</span></span>
 <span><span class="va">effort_df</span> <span class="op">&lt;-</span> <span class="va">occ_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cell_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># ,decimalLongitude,decimalLatitude</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n_occurrences <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cell_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># ,decimalLongitude,decimalLatitude</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n_occurrences <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">effort_df</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 580   2</span></span>
+<span><span class="co">#&gt; [1] 595   2</span></span>
 <span></span>
 <span><span class="co"># Rasterize sampling effort (optional for mapping)</span></span>
 <span><span class="va">sam_eff_rast</span> <span class="op">&lt;-</span> <span class="va">r_id</span></span>
@@ -295,16 +296,16 @@ Please note that paths to data, package names, or exact functions may need adjus
 <code class="sourceCode R"><span><span class="co"># For presence-absence, pivot occurrence data to wide format:</span></span>
 <span><span class="co"># occ_data = c('species', 'x', 'y', 'cell_id')</span></span>
 <span><span class="va">sbs_long</span> <span class="op">&lt;-</span> <span class="va">occ_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">cell_id</span>, <span class="va">species</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>presence <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">cell_id</span>, <span class="va">species</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>presence <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sbs_long</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 816   3</span></span>
+<span><span class="co">#&gt; [1] 820   3</span></span>
 <span></span>
 <span><span class="co"># Ensure we have a row for every cell (site) in 'xy'</span></span>
 <span><span class="va">all_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>cell_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">ncell</a></span><span class="op">(</span><span class="va">r_id</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">sbs_wide</span> <span class="op">&lt;-</span> <span class="va">all_cells</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">sbs_long</span>, by <span class="op">=</span> <span class="st">"cell_id"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>id_cols <span class="op">=</span> <span class="va">cell_id</span>, names_from <span class="op">=</span> <span class="va">species</span>, values_from <span class="op">=</span> <span class="va">presence</span>, values_fill <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">sbs_long</span>, by <span class="op">=</span> <span class="st">"cell_id"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>id_cols <span class="op">=</span> <span class="va">cell_id</span>, names_from <span class="op">=</span> <span class="va">species</span>, values_from <span class="op">=</span> <span class="va">presence</span>, values_fill <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sbs_wide</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 825   5</span></span>
 <span></span>
@@ -363,8 +364,8 @@ Please note that paths to data, package names, or exact functions may need adjus
 <span><span class="co">#&gt; coord. ref. : lon/lat WGS 84 (EPSG:4326) </span></span>
 <span><span class="co">#&gt; source(s)   : memory</span></span>
 <span><span class="co">#&gt; names       :     temp,    precip </span></span>
-<span><span class="co">#&gt; min values  : 10.03506,  100.9582 </span></span>
-<span><span class="co">#&gt; max values  : 29.97553, 2997.4084</span></span></code></pre></div>
+<span><span class="co">#&gt; min values  : 10.02008,  102.5856 </span></span>
+<span><span class="co">#&gt; max values  : 29.97091, 2999.7811</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="extract-environmental-values">Extract Environmental Values<a class="anchor" aria-label="anchor" href="#extract-environmental-values"></a>
@@ -373,13 +374,13 @@ Please note that paths to data, package names, or exact functions may need adjus
 <code class="sourceCode R"><span><span class="co"># Extract environmental values at each site centroid</span></span>
 <span><span class="va">env_vals</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">env_stack</span>, <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">sites_xy</span><span class="op">$</span><span class="va">x</span>, <span class="va">sites_xy</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">env_vals</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       temp   precip</span></span>
-<span><span class="co">#&gt; 1 29.92914 1423.596</span></span>
-<span><span class="co">#&gt; 2 26.02424 2516.053</span></span>
-<span><span class="co">#&gt; 3 26.02424 2516.053</span></span>
-<span><span class="co">#&gt; 4 26.02424 2516.053</span></span>
-<span><span class="co">#&gt; 5 24.65696 2784.449</span></span>
-<span><span class="co">#&gt; 6 22.96617 2652.698</span></span>
+<span><span class="co">#&gt;       temp    precip</span></span>
+<span><span class="co">#&gt; 1 10.42225 1892.7073</span></span>
+<span><span class="co">#&gt; 2 10.42225 1892.7073</span></span>
+<span><span class="co">#&gt; 3 10.42225 1892.7073</span></span>
+<span><span class="co">#&gt; 4 22.49751 1798.8709</span></span>
+<span><span class="co">#&gt; 5 22.49751 1798.8709</span></span>
+<span><span class="co">#&gt; 6 25.87650  561.6971</span></span>
 <span><span class="co"># env_vals &lt;- env_vals[ , -1]  # remove ID column returned by extract()</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -405,8 +406,8 @@ Please note that paths to data, package names, or exact functions may need adjus
 <span><span class="co">#&gt; coord. ref. : lon/lat WGS 84 (EPSG:4326) </span></span>
 <span><span class="co">#&gt; source(s)   : memory</span></span>
 <span><span class="co">#&gt; names       :     temp,    precip, sam.eff </span></span>
-<span><span class="co">#&gt; min values  : 10.03506,  100.9582,       0 </span></span>
-<span><span class="co">#&gt; max values  : 29.97553, 2997.4084,       6</span></span></code></pre></div>
+<span><span class="co">#&gt; min values  : 10.02008,  102.5856,       0 </span></span>
+<span><span class="co">#&gt; max values  : 29.97091, 2999.7811,       5</span></span></code></pre></div>
 <p><strong>Outcome</strong>:<br>
 - <strong>sbe</strong>: site-by-environment matrix (including sampling effort)<br>
 - Updated raster stack (<code>env_stack_all</code>) with environment layers + sampling effort</p>
@@ -683,7 +684,15 @@ Please note that paths to data, package names, or exact functions may need adjus
 <div class="section level3">
 <h3 id="draft-notes-from-cangh">Draft notes from CangH:<a class="anchor" aria-label="anchor" href="#draft-notes-from-cangh"></a>
 </h3>
-<p>Dissimilarity workflow 1. User-defined area of interest and grid resolution (incl. rsa shape file, 0.5 degree), generate a map of AOI and a data frame ‘xy’ of site centroids. 2. Site by species matrix and sampling effort (incl. access occurrences of user-specified taxon or species list, assign records to the grids, generate a raster of occurrence counts called sampling effort), generate a binary data frame ‘sbs’, a richness map of sbs row sums, a single variable data frame of sampling effort ‘sam.eff’ and its raster map. Note, occurrence coordinates are only used for assigning then into grids; they are not needed beyond this step. 3. Site by environment matrix; extract environmental variables only for site centroids ‘xy’ and stack them into raster and data frame ‘sbe’; add ‘sam.eff’ to the stack raster and sbe. 4. Zeta decline (sbs) and zeta decay (sbs, xy), orders 2:15. Generate statistics and figures, no maps. 5. Zeta.msgdm(sbs, sbe, xy), order 2, 3, 5, 10. Generate statistics and figures, no maps. Save fitted order 2 model ‘zeta2’. 6. Predict(zeta2) with ‘sam.eff’ in the ‘sbe’ replaced by ‘sam.max’ a constant for all sites = max(sam.eff). Predict for the updated sbe and xy and produce a site by site matrix of predicted zeta ‘zeta.now’. Run nmds for the predicted zeta matrix and plot RGB of the 3 component scores. Clustering analyses directly using zeta.now. Generate main maps of dissimilarity (the rgb plot) and bioregions (from clustering). 7. Predict(zeta2) with appended (future scenarios) environmental variables and ‘sam.max’ in sbe. For m number of scenarios plus the present scenario (step6) and n sites of xy, this updated sbe.future will have k = (m+1) x n number of rows. ‘xy’ also updated with k rows. Predict a k by k matrix of predicted zeta ‘zeta.future’. Nmds and clustering of zeta.future, map sub matrices to indicate predicted future dissimilarity, bioregions, and temporal turnover. Note, step6 is redundant if step7 is needed; step7 has the same code but more results including those from step6 but potentially computational demanding. 8. Deposit all data frames, tables, maps, and standard metadata to zenodo</p>
+<p>Dissimilarity workflow<br>
+1. User-defined area of interest and grid resolution (incl. rsa shape file, 0.5 degree), generate a map of AOI and a data frame ‘xy’ of site centroids.<br>
+2. Site by species matrix and sampling effort (incl. access occurrences of user-specified taxon or species list, assign records to the grids, generate a raster of occurrence counts called sampling effort), generate a binary data frame ‘sbs’, a richness map of sbs row sums, a single variable data frame of sampling effort ‘sam.eff’ and its raster map. Note, occurrence coordinates are only used for assigning then into grids; they are not needed beyond this step.<br>
+3. Site by environment matrix; extract environmental variables only for site centroids ‘xy’ and stack them into raster and data frame ‘sbe’; add ‘sam.eff’ to the stack raster and sbe.<br>
+4. Zeta decline (sbs) and zeta decay (sbs, xy), orders 2:15. Generate statistics and figures, no maps.<br>
+5. Zeta.msgdm(sbs, sbe, xy), order 2, 3, 5, 10. Generate statistics and figures, no maps. Save fitted order 2 model ‘zeta2’.<br>
+6. Predict(zeta2) with ‘sam.eff’ in the ‘sbe’ replaced by ‘sam.max’ a constant for all sites = max(sam.eff). Predict for the updated sbe and xy and produce a site by site matrix of predicted zeta ‘zeta.now’. Run nmds for the predicted zeta matrix and plot RGB of the 3 component scores. Clustering analyses directly using zeta.now. Generate main maps of dissimilarity (the rgb plot) and bioregions (from clustering).<br>
+7. Predict(zeta2) with appended (future scenarios) environmental variables and ‘sam.max’ in sbe. For m number of scenarios plus the present scenario (step6) and n sites of xy, this updated sbe.future will have k = (m+1) x n number of rows. ‘xy’ also updated with k rows. Predict a k by k matrix of predicted zeta ‘zeta.future’. Nmds and clustering of zeta.future, map sub matrices to indicate predicted future dissimilarity, bioregions, and temporal turnover. Note, step6 is redundant if step7 is needed; step7 has the same code but more results including those from step6 but potentially computational demanding.<br>
+8. Deposit all data frames, tables, maps, and standard metadata to zenodo</p>
 </div>
 </div>
 </div>
